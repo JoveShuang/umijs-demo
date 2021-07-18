@@ -1,8 +1,7 @@
 import request, { extend } from 'umi-request';
 import { message } from 'antd';
-import { FormDatas } from './data';
 
-const errorHandler = function (error: any) {
+const errorHandler = function (error) {
   const codeMap = {
     '021': 'An error has occurred',
     '022': 'It’s a big mistake,',
@@ -39,22 +38,16 @@ export const getRemoteList = async () => {
     });
 };
 
-export const editData = async ({
-  id,
-  data,
-}: {
-  id: number;
-  data: FormDatas;
-}) => {
+export const editData = async ({ id, data }: { id: number; data: object }) => {
   return request(`http://public-api-v1.aspirantzhang.com/users/${id}`, {
     method: 'put',
     data,
   })
     .then(function (response) {
-      return response || true;
+      message.success('Edit Success.');
     })
     .catch(function (error) {
-      console.error('Edit Failed.');
+      message.error('Edit Failed.');
     });
 };
 
@@ -63,28 +56,21 @@ export const deleteData = async ({ id }: { id: number }) => {
     method: 'delete',
   })
     .then(function (response) {
-      return response || true;
+      message.success('Delete Success.');
     })
     .catch(function (error) {
-      console.error('Delete Failed.');
+      message.error('Delete Failed.');
     });
 };
 
-export const addData = async ({
-  id,
-  data,
-}: {
-  id: number;
-  data: FormDatas;
-}) => {
+export const addData = async ({ id }: { id: number }) => {
   return request(`http://public-api-v1.aspirantzhang.com/users/`, {
     method: 'post',
-    data,
   })
     .then(function (response) {
-      return response || true;
+      message.success('Add Success.');
     })
     .catch(function (error) {
-      console.error('Add Failed.');
+      message.error('Add Failed.');
     });
 };

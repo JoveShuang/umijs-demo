@@ -1,10 +1,18 @@
 import { Reducer, Effect, Subscription } from 'umi';
 import { message } from 'antd';
 import { getRemoteList, editData, deleteData, addData } from './services';
-import { SingleUserType } from './data';
+
+export interface SingleUserType {
+  id: number;
+  name: string;
+  email: string;
+  create_time: string;
+  update_time: string;
+  status: number;
+}
 
 export interface UserState {
-  data: SingleUserType[];
+  data: [];
   meta: {
     total: number;
     per_page: number;
@@ -14,9 +22,9 @@ export interface UserState {
 
 interface UserModelType {
   namespace: 'users';
-  state: SingleUserType;
+  state: UserState;
   reducers: {
-    getList: Reducer<UserState>;
+    getList: Reducer;
   };
   effects: {
     getRemote: Effect;
@@ -31,16 +39,14 @@ interface UserModelType {
 
 const UserModel: UserModelType = {
   namespace: 'users',
-  state: [
-    {
-      data: [],
-      meta: {
-        total: 0,
-        per_page: 5,
-        page: 1,
-      },
+  state: {
+    data: [],
+    meta: {
+      total: 0,
+      per_page: 5,
+      page: 1,
     },
-  ],
+  },
   reducers: {
     getList(state, { type, payload }) {
       return payload;
@@ -66,8 +72,8 @@ const UserModel: UserModelType = {
       }
     },
     *delete({ payload: { id } }, { put, call }) {
-      const datas = yield call(deleteData, { id });
-      if (datas) {
+      const data = yield call(deleteData, { id });
+      if (data) {
         message.success('Delete success.');
         yield put({
           type: 'getRemote',
@@ -78,7 +84,6 @@ const UserModel: UserModelType = {
     },
     *add({ payload: { data } }, { put, call }) {
       const datas = yield call(addData, { data });
-      console.log(datas);
       if (datas) {
         message.success('Add success.');
         yield put({

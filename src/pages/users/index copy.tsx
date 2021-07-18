@@ -1,8 +1,7 @@
 import React, { useState, FC } from 'react';
-import { connect, Dispatch, Loading, UserState } from 'umi';
+import { connect, Dispatch, Loading, UserState, SingleUserType } from 'umi';
 import { Table, Tag, Space, Modal, Button, Popconfirm, message } from 'antd';
 import UserModal from './components/UserModal';
-import { SingleUserType, FormDatas } from './data';
 
 interface UserListPageProps {
   users: UserState;
@@ -16,16 +15,16 @@ const UserListPage: FC<UserListPageProps> = ({
   userListLoading,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [nowData, setNowData] = useState<SingleUserType | undefined>(undefined);
+  const [nowData, setNowData] = useState(undefined);
   const handleModalVisible = (visible: boolean) => {
     setModalVisible(visible);
   };
-  const handleEditData = (data: SingleUserType) => {
+  const handleEditData = (data) => {
     console.log(data);
     setNowData(data);
     handleModalVisible(true);
   };
-  const handleSubmit = (data: FormDatas) => {
+  const handleSubmit = (data) => {
     let id = null;
     if (nowData) {
       id = nowData.id;

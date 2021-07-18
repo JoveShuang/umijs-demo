@@ -1,30 +1,52 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, FC } from 'react';
 import { Form, Input, Modal, message, Button } from 'antd';
+import { SingleUserType, FormDatas } from '../data';
 
-const UserModal = (props:any) => {
+interface UserModalProps {
+  nowData: SingleUserType | undefined;
+  modalVisible: boolean;
+  handleModalVisible: () => void;
+  handleSubmit: FormDatas;
+}
+
+const UserModal: FC<UserModalProps> = (props) => {
   const { nowData, modalVisible, handleModalVisible, handleSubmit } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.setFieldsValue(nowData);
+    if (nowData) {
+      form.setFieldsValue(nowData);
+    } else {
+      form.resetFields();
+    }
   }, [modalVisible]);
 
   const subForm = () => {
-    form.submit()
-  }
+    form.submit();
+  };
 
-  const closeModal = (error?:Boolean) => {
-    error ? message.error('This is an error message') : handleModalVisible(false);
-
-  }
+  const closeModal = (error?: Boolean) => {
+    error
+      ? message.error('This is an error message')
+      : handleModalVisible(false);
+  };
 
   return (
-    <Modal title="Basic Modal" visible={modalVisible} onOk={ subForm } onCancel={() => { closeModal() }} >
+    <Modal
+      title="Basic Modal"
+      visible={modalVisible}
+      onOk={subForm}
+      onCancel={() => {
+        closeModal();
+      }}
+    >
       <Form
         name="basic"
         form={form}
         onFinish={handleSubmit}
-        onFinishFailed={() => {closeModal(true)}}
+        onFinishFailed={() => {
+          closeModal(true);
+        }}
       >
         <Form.Item
           label="name"
@@ -33,30 +55,18 @@ const UserModal = (props:any) => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          label="email"
-          name="email"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
+        <Form.Item label="email" name="email">
           <Input />
         </Form.Item>
-        <Form.Item
-          label="create_time"
-          name="create_time"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
+        <Form.Item label="create_time" name="create_time">
           <Input />
         </Form.Item>
-        <Form.Item
-          label="status"
-          name="status"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
+        <Form.Item label="status" name="status">
           <Input />
         </Form.Item>
       </Form>
     </Modal>
-  )
-}
+  );
+};
 
-export default UserModal
+export default UserModal;
