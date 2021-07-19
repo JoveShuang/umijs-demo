@@ -6,10 +6,11 @@ export default defineConfig({
   },
   proxy: {
     '/api': {
-      'target': 'http://public-api-v1.aspirantzhang.com/',
-      'changeOrigin': true,
-      'pathRewrite': { '^/api' : '' },
+      target: 'http://public-api-v1.aspirantzhang.com/',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
     },
   },
+  mfsu: {},
   fastRefresh: {},
 });

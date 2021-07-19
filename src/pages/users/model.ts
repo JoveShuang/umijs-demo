@@ -14,15 +14,13 @@ export interface UserState {
 
 interface UserModelType {
   namespace: 'users';
-  state: SingleUserType;
+  state: UserState;
   reducers: {
     getList: Reducer<UserState>;
   };
   effects: {
     getRemote: Effect;
-    edit: Effect;
     delete: Effect;
-    add: Effect;
   };
   subscriptions: {
     setup: Subscription;
@@ -31,70 +29,59 @@ interface UserModelType {
 
 const UserModel: UserModelType = {
   namespace: 'users',
-  state: [
-    {
-      data: [],
-      meta: {
-        total: 0,
-        per_page: 5,
-        page: 1,
-      },
+  state: {
+    data: [],
+    meta: {
+      total: 0,
+      per_page: 5,
+      page: 1,
     },
-  ],
+  },
+
   reducers: {
     getList(state, { type, payload }) {
+      console.log('reducers');
       return payload;
     },
   },
   effects: {
-    *getRemote({ payload }, { put, call }) {
-      const data = yield call(getRemoteList);
+    *getRemote({ payload: { page, per_page } }, { put, call }) {
+      const data = yield call(getRemoteList, { page, per_page });
       yield put({
         type: 'getList',
         payload: data,
       });
     },
-    *edit({ payload: { id, data } }, { put, call }) {
-      const datas = yield call(editData, { id, data });
-      if (datas) {
-        message.success('Edit success.');
-        yield put({
-          type: 'getRemote',
-        });
-      } else {
-        message.error('Edit Failed.');
-      }
-    },
-    *delete({ payload: { id } }, { put, call }) {
+    *delete({ payload: { id } }, { put, call, select }) {
       const datas = yield call(deleteData, { id });
       if (datas) {
         message.success('Delete success.');
+        const { page, per_page } = yield select(
+          (state: any) => state.users.meta,
+        );
         yield put({
           type: 'getRemote',
+          payload: {
+            page,
+            per_page,
+          },
         });
       } else {
         message.error('Delete Failed.');
-      }
-    },
-    *add({ payload: { data } }, { put, call }) {
-      const datas = yield call(addData, { data });
-      console.log(datas);
-      if (datas) {
-        message.success('Add success.');
-        yield put({
-          type: 'getRemote',
-        });
-      } else {
-        message.error('Add Failed.');
       }
     },
   },
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
+        console.log('subscriptions');
         if (pathname === '/users') {
           dispatch({
             type: 'getRemote',
+            payload: {
+              page: 1,
+              per_page: 5,
+            },
           });
         }
       });

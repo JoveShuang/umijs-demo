@@ -1,21 +1,38 @@
 import React, { useEffect, FC } from 'react';
-import { Form, Input, Modal, message, Button } from 'antd';
+import { Form, Input, Modal, message, Button, DatePicker, Switch } from 'antd';
+import moment from 'moment';
 import { SingleUserType, FormDatas } from '../data';
 
 interface UserModalProps {
   nowData: SingleUserType | undefined;
   modalVisible: boolean;
-  handleModalVisible: () => void;
+  handleModalVisible: (visible: boolean) => void;
   handleSubmit: FormDatas;
+  confirmLoading: boolean;
 }
 
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+};
+
 const UserModal: FC<UserModalProps> = (props) => {
-  const { nowData, modalVisible, handleModalVisible, handleSubmit } = props;
+  const {
+    nowData,
+    modalVisible,
+    handleModalVisible,
+    handleSubmit,
+    confirmLoading,
+  } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
     if (nowData) {
-      form.setFieldsValue(nowData);
+      form.setFieldsValue({
+        ...nowData,
+        create_time: moment(nowData.create_time),
+        status: Boolean(nowData.status),
+      });
     } else {
       form.resetFields();
     }
@@ -33,8 +50,10 @@ const UserModal: FC<UserModalProps> = (props) => {
 
   return (
     <Modal
-      title="Basic Modal"
+      forceRender
+      title={nowData ? `Edit ID:${nowData.id}` : 'Add'}
       visible={modalVisible}
+      confirmLoading={confirmLoading}
       onOk={subForm}
       onCancel={() => {
         closeModal();
@@ -42,10 +61,14 @@ const UserModal: FC<UserModalProps> = (props) => {
     >
       <Form
         name="basic"
+        {...layout}
         form={form}
         onFinish={handleSubmit}
         onFinishFailed={() => {
           closeModal(true);
+        }}
+        initialValues={{
+          status: 1,
         }}
       >
         <Form.Item
@@ -59,10 +82,10 @@ const UserModal: FC<UserModalProps> = (props) => {
           <Input />
         </Form.Item>
         <Form.Item label="create_time" name="create_time">
-          <Input />
+          <DatePicker showTime />
         </Form.Item>
-        <Form.Item label="status" name="status">
-          <Input />
+        <Form.Item label="status" name="status" valuePropName="checked">
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>
